@@ -16,14 +16,14 @@ func initRoutes() {
 	for _, route := range routes {
 		var name = route["name"].(string)
 
-		var tempRoute = Route{
-			Name:   name,
-			Prefix: checkPrefix(name, route["prefix"].(string)),
-			Jwt:    checkJwt(name, route["jwt"]),
-			Paths:  checkPaths(name, route["route"]),
+		var tempRoute = &Route{
+			Name:  name,
+			Url:   checkPrefix(name, route["prefix"].(string)),
+			Jwt:   checkJwt(name, route["jwt"]),
+			Paths: checkPaths(name, route["route"]),
 		}
 
-		Config.Routes = append(Config.Routes, tempRoute)
+		Config.Routes[tempRoute.Url] = tempRoute
 	}
 }
 
@@ -49,8 +49,9 @@ func checkJwt(name string, jwt interface{}) bool {
 	return b
 }
 
-func checkPaths(name string, origin any) []RouteInfo {
-	var routeInfos []RouteInfo
+// step by step to transform path
+func checkPaths(name string, origin any) []*RouteInfo {
+	var routeInfos []*RouteInfo
 
 	// transform origin into []interface{}
 	var paths, ok = origin.([]interface{})
@@ -62,13 +63,21 @@ func checkPaths(name string, origin any) []RouteInfo {
 		if !ok {
 			panic(output.Error() + "Route: " + name + " failed to transform config into map[string]interface{}")
 		}
-		var tempRouteInfo = RouteInfo{
-			Path: m["path"].(string),
-			// TODO: check if weight is an integer
-			Weight: 1,
+		var tempRouteInfo = &RouteInfo{
+			Path:   m["path"].(string),
+			Weight: checkWeight(name, m["weight"]),
 		}
 		routeInfos = append(routeInfos, tempRouteInfo)
 	}
 
 	return routeInfos
+}
+
+func checkWeight(name string, weight interface{}) int {
+	w, ok := weight.(int)
+	if !ok {
+		fmt.Println(output.Default() + "route: " + name + " does not have a weight field or it is not an integer. Defaulting to 1")
+		return 1
+	}
+	return w
 }

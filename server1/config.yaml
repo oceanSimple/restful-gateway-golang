@@ -1,5 +1,5 @@
 port: 9000
-
+jwt: ocean1234567890
 routes:
   - name: "home"
     prefix: "/home"
@@ -16,4 +16,12 @@ routes:
       - path: "http://localhost:9003"
         weight: 1
       - path: "http://localhost:9004"
+        weight: 1
+  - name: "test-p1"
+    prefix: "/test-p1"
+    jwt: true
+    route:
+      - path: "http://localhost:8001"
+        weight: 1
+      - path: "http://localhost:8002"
         weight: 1

@@ -6,11 +6,15 @@ import (
 	"server1/output"
 )
 
-var Config = &ConfigClass{}
+var Config = &ConfigClass{
+	Port:   0,
+	Routes: make(map[string]*Route),
+}
 
 func init() {
 	initViper()
 	initPort()
+	initJwtKey()
 	initRoutes()
 }
 
@@ -29,4 +33,8 @@ func initViper() {
 
 func initPort() {
 	Config.Port = viper.GetInt64("port")
+}
+
+func initJwtKey() {
+	Config.JwtKey = viper.GetString("jwt")
 }

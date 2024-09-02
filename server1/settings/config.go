@@ -2,14 +2,16 @@ package settings
 
 type ConfigClass struct {
 	Port   int64
-	Routes []Route
+	JwtKey string
+	Routes map[string]*Route
 }
 
 type Route struct {
-	Name   string
-	Prefix string
-	Jwt    bool
-	Paths  []RouteInfo
+	Name    string
+	Url     string
+	Jwt     bool
+	Paths   []*RouteInfo
+	Counter int64 // counter for round robin
 }
 
 type RouteInfo struct {
