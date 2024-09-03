@@ -9,6 +9,7 @@ routes:
         weight: 1
       - path: "http://localhost:9002"
         weight: 1
+        
   - name: "login"
     prefix: "/login"
     jwt: false
@@ -17,6 +18,7 @@ routes:
         weight: 1
       - path: "http://localhost:9004"
         weight: 1
+
   - name: "test-p1"
     prefix: "/test-p1"
     jwt: true

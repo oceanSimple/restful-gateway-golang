@@ -8,6 +8,7 @@ import (
 	"server1/balance"
 	"server1/output"
 	"server1/settings"
+	"server1/tool"
 	"strconv"
 	"strings"
 )
@@ -98,7 +99,22 @@ func getRoutePrefix(route *settings.Route) string {
 
 // Check jwt
 func checkJwt(context *gin.Context) (bool, string) {
-	// TODO check jwt
-	// fmt.Println(output.Info() + "Checking jwt and jwt key is " + settings.Config.JwtKey)
+	// Get jwt from header
+	jwt := context.GetHeader("Authorization")
+	if jwt == "" {
+		return false, "Missing jwt token"
+	} else { // example: Bearer xxx
+		// judge whether the jwt begins with "Bearer"
+		if !strings.HasPrefix(jwt, "Bearer ") {
+			return false, "jwt string must begin with 'Bearer '"
+		}
+		// delete "Bearer"
+		jwt = strings.Replace(jwt, "Bearer ", "", 1)
+		// parse jwt
+		_, err := tool.ParseJwtToken(jwt, settings.Config.JwtKey)
+		if err != nil {
+			return false, err.Error()
+		}
+	}
 	return true, ""
 }
